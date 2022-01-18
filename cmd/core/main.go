@@ -1,13 +1,13 @@
-package core
+package main
 
 import (
 	"flag"
 	"fmt"
+	"github.com/luenci/trace/core"
+	"github.com/luenci/trace/core/ast"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"trace/core"
-	"trace/core/ast"
 )
 
 var (
@@ -62,4 +62,7 @@ func main() {
 		return
 	}
 	fmt.Printf("instrument trace for %s ok\n", file)
+
+	// 将生成的追踪代码文件写入到trace目录下
+	
 }
