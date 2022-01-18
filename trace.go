@@ -3,7 +3,10 @@ package trace
 import (
 	"bytes"
 	"fmt"
+	"github.com/sony/sonyflake"
+	"log"
 	"runtime"
+
 	"strconv"
 	"sync"
 )
@@ -20,6 +23,17 @@ func printTrace(id uint64, name, arrow string, indent int) {
 		indents += " "
 	}
 	fmt.Printf("g[%05d]:%s%s%s\n", id, indents, arrow, name)
+}
+
+// genSonyflake 生成 SonyflakeID
+func genSonyflake() uint64 {
+	flake := sonyflake.NewSonyflake(sonyflake.Settings{})
+	id, err := flake.NextID()
+	if err != nil {
+		log.Fatalf("flake.NextID() failed with %s\n", err)
+	}
+	// Note: this is base16, could shorten by encoding as base62 string
+	return id
 }
 
 // curGoroutineID 获取当前goroutine的id
@@ -48,6 +62,7 @@ func Trace() func() {
 	fn := runtime.FuncForPC(pc)
 	name := fn.Name()
 	gid := curGoroutineID()
+	// sonyflakeId := genSonyflake()
 
 	mu.Lock()
 	indents := m[gid]    // 获取当前gid对应的缩进层次
